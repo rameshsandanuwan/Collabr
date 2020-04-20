@@ -1,0 +1,17 @@
+<h2>Project Assets</h2>
+<%=values.id %>
+<form action="/projects/assets/edit/<%=values.id %>" method="POST">
+    <div class="col-12">
+        <label>asset name</label>
+        <input type="text" name="assetname" value="<%= values.name %>">
+    </div>
+    <div class="col-12">
+        <label>asset description</label>
+        <input type="textarea" name="assetdescription" value="<%= values.description %>">    
+    </div>
+    <div class="col-12">
+        <label>asset link</label>
+        <input type="textarea" name="assetlink" value="<%= values.link %>">    
+    </div>
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+</form>       

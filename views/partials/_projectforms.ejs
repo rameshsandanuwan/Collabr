@@ -1,0 +1,25 @@
+<form action="/projects/create" method="POST">
+    <div class="col-12">
+        <label>project title</label>
+        <input required type="text" name="title">
+    </div>
+    <div class="col-12">
+        <label>project description</label>
+        <input required  type="textarea" name="description">    
+    </div>
+    <div class="col-12">
+        <label>project status</label>
+        <select class="form-control" id="sel1" name="status">
+            <option value="finished">finished</option>
+            <option value="ongoing">ongoing</option>
+        </select>
+    </div>
+    <div class="col-12">
+        <label>project type</label>
+        <select class="form-control" id="sel1" name="type">
+            <option value="individual">individual</option>
+            <option value="collaborative">collaborative</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">create</button>
+</form>

@@ -1,0 +1,510 @@
+
+  <div class="col-12" style="background: skyblue;">
+    <h1 class="mt-4">Dashboard</h1>
+    <p class="lead mb-3">Welcome <%= user.name %></p>
+    <a href="/users/logout" class="btn btn-secondary">Logout</a>
+  </div>  
+    
+  
+  <div class="col-12" style="background: aqua;">
+        
+        <h1>create new project</h1>
+        <form action="/projects/create" method="POST">
+            <div class="col-12">
+                <label>project title</label>
+                <input required type="text" name="title">
+            </div>
+            <div class="col-12">
+                <label>project description</label>
+                <input required  type="textarea" name="description">    
+            </div>
+            <div class="col-12">
+                <label>project status</label>
+                <select class="form-control" id="sel1" name="status">
+                    <option value="finished">finished</option>
+                    <option value="ongoing">ongoing</option>
+                </select>
+            </div>
+            <div class="col-12">
+                <label>project type</label>
+                <select class="form-control" id="sel1" name="type">
+                    <option value="individual">individual</option>
+                    <option value="collaborative">collaborative</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">create</button>
+        </form>
+        
+    </div>
+
+    <div class="col-12" style="background: royalblue;">
+        
+        <h1>join project</h1>
+        <form action="/projects/join" method="POST">
+            <div class="col-12">
+                <label>project invite</label>
+                <input required type="text" name="joinprojectid">
+            </div>
+            <button type="submit" class="btn btn-primary">Join</button>
+        </form>
+        
+    </div>
+
+
+    <div class="col-6" style="background: teal; float: left;">
+       
+            <h1>Your Projects</h1>
+    <% items.forEach(item =>{%>
+    <% if(item.usercreatorid == user.id){ %>
+
+
+    <div class="card mt-4" style="background: yellowgreen;">
+        <div class="card-body">
+
+            <h2 class="card-title">
+               Project: <%=item.name%>
+               
+            </h2>
+            <div class="card-subtitle text-muted">
+              
+               Created By: <%=item.usercreatorid%>
+            </div>
+            <div class="card-subtitle text-muted">
+              
+                Project ID: <%=item.id%>
+             </div>
+          
+            <div class="card-content">
+                <div class="col-12">
+                    <%=item.description%>
+                </div>
+                <div class="col-12">
+                  Project Type:  <%=item.type%>
+                </div>
+                <div class="col-12">
+                  Project Status:  <%=item.status%>
+                </div>
+            </div>
+            <div class="row">
+                <!-- edit delete buttons -->
+                <% if(user.id == item.usercreatorid) { %>
+                    <form action="/projects/yourprojects/delete/<%= item.id %>?_method=DELETE" method="POST">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+                <a class="btn btn-primary" href="/projects/yourprojects/edit/<%= item.id %>">edit</a>
+            
+               <% } %>
+            </div>
+        </div>
+
+
+        <div class="col-12" style="background: lightcyan;">
+
+            <h2 class="card-title">members</h2>
+            <% member.forEach(member =>{
+                if(member.projectid==item.id && member.userid!=user.id){
+                %>
+             <div class="card" style="background: lightsalmon;"> 
+                <div class="card-body">
+                    <h2 class="card-title">
+                      <%= member.name %>
+                    </h2>
+                    <h4 class="card-title">
+                     Role: <%= member.role %>
+                    </h4>
+                    <div class="card-subtitle text-muted">
+                     Membership ID: <%= member.id %>
+                    </div>
+                    <div class="card-subtitle text-muted">
+                     Approved stat: <%= member.approve %>
+                    </div>
+                    <div class="col-12" style="background: rgb(150, 150, 150);">
+                     <% if (item.usercreatorid == user.id || member.userid == user.id) {%>
+                        <form action="projects/member/delete/<%= member.id %>" method="POST">
+                            <button type="submit" class="btn btn-warning">Remove</button>
+                        </form>
+
+                     <% }%>   
+                     <% if(item.usercreatorid == user.id  && member.approve == null){%>
+                        <form action="projects/member/approve/<%= member.id %>" method="POST">
+                            <button type="submit" class="btn btn-warning">Approve</button>
+                        </form>
+                     <%}%>
+                        
+                    </div>
+                    <div class="col-12" style="background: lime;">
+                      
+                        <% if(item.usercreatorid == user.id && member.role == null ){%>
+                            <form action="projects/member/role/<%= member.id %>" method="POST">
+                            <input type="text" name="memberrole">
+                            <button class="btn btn-primary" type="submit">assign role</button>
+                            </form>
+                           
+                    
+                        <%}%>
+                            <form action="projects/member/role/delete/<%= member.id %>" method="POST">
+                            <button class="btn btn-primary" type="submit">delete role</button>
+                            </form>
+
+                    </div>
+                </div>
+            </div>
+                <% }}) %>
+           
+            
+        </div>
+        <div style="background: gray; padding: 10px;">
+            <!-- post section -->
+            <div class="col-6" style="float: left; background: violet;">
+                <h2>Project Posts</h2>
+                <form action="/projects/yourprojects/addpost/<%=item.id %>" method="POST">
+                    <div class="col-12">
+                        <label>post title</label>
+                        <input type="text" name="posttitle">
+                    </div>
+                    <div class="col-12">
+                        <label>description</label>
+                        <input type="textarea" name="postdescription">    
+                    </div>
+                    <button type="submit" class="btn btn-primary">post</button>
+                </form>        
+
+                <% post.forEach(post =>{
+                    if(post.projectid==item.id){
+                    %>
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">
+                        <%=post.title %> 
+                        </h4>
+                        <div class="card-subtitle text-muted">
+                        Posted By: <%=post.userid%> 
+                        </div>
+                        <div class="card-content">
+                        <%=post.content %> 
+                        </div>
+                    </div>
+                
+                
+                    <% if(post.userid == user.id){ %>
+
+                    <form action="/projects/yourprojects/deletepost/<%= post.id %>?_method=DELETE" method="POST">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                    <a class="btn btn-primary" href="/projects/posts/edit/<%= post.id %>">edit</a>
+                    <% } %>
+                
+          
+                </div>
+                         
+               
+                <%}})%>
+           
+                </div>  
+
+                
+                
+                <!-- asset section -->
+            <div class="col-6" style="float: left; background: lightblue;">
+                <h2>Project Assets</h2>
+                <form action="/projects/yourprojects/addasset/<%=item.id %>" method="POST">
+                    <div class="col-12">
+                        <label>asset name</label>
+                        <input type="text" name="assetname">
+                    </div>
+                    <div class="col-12">
+                        <label>asset description</label>
+                        <input type="textarea" name="assetdescription">    
+                    </div>
+                    <div class="col-12">
+                        <label>asset link</label>
+                        <input type="textarea" name="assetlink">    
+                    </div>
+                    <button type="submit" class="btn btn-primary">post</button>
+                </form>        
+
+                <% asset.forEach(asset =>{
+                    if(asset.projectid==item.id){
+                    %>
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">
+                        <%=asset.name %> 
+                        </h4>
+                        <div class="card-subtitle text-muted">
+                        Posted By: <%=asset.userid%> 
+                        </div>
+                        <div class="card-content">
+                        <%=asset.link %> 
+                        </div>
+                    </div>
+                
+                
+                    <% if(asset.userid == user.id){ %>
+
+                    <form action="/projects/yourprojects/deleteasset/<%= asset.id %>?_method=DELETE" method="POST">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                    <a class="btn btn-primary" href="/projects/assets/edit/<%= asset.id %>">edit</a>
+                    <% } %>
+                
+          
+                </div>
+                         
+               
+                <%}})%>
+           
+                </div>  
+             
+
+                </div>
+                </div>
+
+                <% }%>
+
+                <% })%>
+    </div>
+          
+    
+
+
+
+
+
+
+
+
+
+
+
+
+   
+<div class="col-6" style="background: lightcoral; float: left;">
+    
+    <h1> Joined Projects</h1>
+    <% membership.forEach(membership =>{%>
+        
+         <% if(user.id == membership.userid){%>
+            <% items.forEach(item =>{%>
+        
+            <% if(membership.projectid == item.id && membership.approve == "approved"){%>
+
+                <div class="card mt-4" style="background: yellowgreen;">
+        <div class="card-body">
+
+            <h2 class="card-title">
+               Project: <%=item.name%>
+               
+            </h2>
+            <div class="card-subtitle text-muted">
+              
+               Created By: <%=item.usercreatorid%>
+            </div>
+            <div class="card-subtitle text-muted">
+              
+                Project ID: <%=item.id%>
+             </div>
+          
+            <div class="card-content">
+                <div class="col-12">
+                    <%=item.description%>
+                </div>
+                <div class="col-12">
+                  Project Type:  <%=item.type%>
+                </div>
+                <div class="col-12">
+                  Project Status:  <%=item.status%>
+                </div>
+            </div>
+            <div class="row">
+                <!-- edit delete buttons -->
+                <% if(user.id == item.usercreatorid) { %>
+                    <form action="/projects/yourprojects/delete/<%= item.id %>?_method=DELETE" method="POST">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+                <a class="btn btn-primary" href="/projects/yourprojects/edit/<%= item.id %>">edit</a>
+            
+               <% } %>
+            </div>
+        </div>
+
+
+        <div class="col-12" style="background: lightcyan;">
+
+            <h2 class="card-title">members</h2>
+            <% member.forEach(member =>{
+                if(member.projectid==item.id && member.userid!=user.id){
+                %>
+             <div class="card" style="background: lightsalmon;"> 
+                <div class="card-body">
+                    <h2 class="card-title">
+                      <%= member.name %>
+                    </h2>
+                    <h4 class="card-title">
+                     Role: <%= member.role %>
+                    </h4>
+                    <div class="card-subtitle text-muted">
+                     Membership ID: <%= member.id %>
+                    </div>
+                    <div class="card-subtitle text-muted">
+                     Approved stat: <%= member.approve %>
+                    </div>
+                    <div class="col-12" style="background: rgb(150, 150, 150);">
+                     <% if (item.usercreatorid == user.id || member.userid == user.id) {%>
+                        <form action="projects/member/delete/<%= member.id %>" method="POST">
+                            <button type="submit" class="btn btn-warning">Remove</button>
+                        </form>
+
+                     <% }%>   
+                     <% if(item.usercreatorid == user.id  && member.approve == null){%>
+                        <form action="projects/member/approve/<%= member.id %>" method="POST">
+                            <button type="submit" class="btn btn-warning">Approve</button>
+                        </form>
+                     <%}%>
+                        
+                    </div>
+                    <div class="col-12" style="background: lime;">
+                      
+                        <% if(item.usercreatorid == user.id && member.role == null ){%>
+                            <form action="projects/member/role/<%= member.id %>" method="POST">
+                            <input type="text" name="memberrole">
+                            <button class="btn btn-primary" type="submit">assign role</button>
+                            </form>
+                           
+                    
+                        <%}%>
+                            <form action="projects/member/role/delete/<%= member.id %>" method="POST">
+                            <button class="btn btn-primary" type="submit">delete role</button>
+                            </form>
+
+                    </div>
+                </div>
+            </div>
+                <% }}) %>
+           
+            
+        </div>
+        <div style="background: gray; padding: 10px;">
+            <!-- post section -->
+            <div class="col-6" style="float: left; background: violet;">
+                <h2>Project Posts</h2>
+                <form action="/projects/yourprojects/addpost/<%=item.id %>" method="POST">
+                    <div class="col-12">
+                        <label>post title</label>
+                        <input type="text" name="posttitle">
+                    </div>
+                    <div class="col-12">
+                        <label>description</label>
+                        <input type="textarea" name="postdescription">    
+                    </div>
+                    <button type="submit" class="btn btn-primary">post</button>
+                </form>        
+
+                <% post.forEach(post =>{
+                    if(post.projectid==item.id){
+                    %>
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">
+                        <%=post.title %> 
+                        </h4>
+                        <div class="card-subtitle text-muted">
+                        Posted By: <%=post.userid%> 
+                        </div>
+                        <div class="card-content">
+                        <%=post.content %> 
+                        </div>
+                    </div>
+                
+                
+                    <% if(post.userid == user.id){ %>
+
+                    <form action="/projects/yourprojects/deletepost/<%= post.id %>?_method=DELETE" method="POST">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                    <a class="btn btn-primary" href="/projects/posts/edit/<%= post.id %>">edit</a>
+                    <% } %>
+                
+          
+                </div>
+                         
+               
+                <%}})%>
+           
+                </div>  
+
+                
+                
+                <!-- asset section -->
+            <div class="col-6" style="float: left; background: lightblue;">
+                <h2>Project Assets</h2>
+                <form action="/projects/yourprojects/addasset/<%=item.id %>" method="POST">
+                    <div class="col-12">
+                        <label>asset name</label>
+                        <input type="text" name="assetname">
+                    </div>
+                    <div class="col-12">
+                        <label>asset description</label>
+                        <input type="textarea" name="assetdescription">    
+                    </div>
+                    <div class="col-12">
+                        <label>asset link</label>
+                        <input type="textarea" name="assetlink">    
+                    </div>
+                    <button type="submit" class="btn btn-primary">post</button>
+                </form>        
+
+                <% asset.forEach(asset =>{
+                    if(asset.projectid==item.id){
+                    %>
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">
+                        <%=asset.name %> 
+                        </h4>
+                        <div class="card-subtitle text-muted">
+                        Posted By: <%=asset.userid%> 
+                        </div>
+                        <div class="card-content">
+                        <%=asset.link %> 
+                        </div>
+                    </div>
+                
+                
+                    <% if(asset.userid == user.id){ %>
+
+                    <form action="/projects/yourprojects/deleteasset/<%= asset.id %>?_method=DELETE" method="POST">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                    <a class="btn btn-primary" href="/projects/assets/edit/<%= asset.id %>">edit</a>
+                    <% } %>
+                
+          
+                </div>
+                         
+               
+                <%}})%>
+           
+                </div>  
+             
+
+                </div>
+                </div>
+
+
+
+
+   
+           <% } %>
+
+
+             <% })%>
+            
+    
+            <% } %>
+
+
+    <% })%>
+
+
+</div>
